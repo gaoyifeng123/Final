@@ -1,10 +1,13 @@
-version: '3.3'
+version: '3.8'
 services:  
   frontend:
     image: gaoyifeng123/234-deploylab-frontend:latest
     pull_policy: always
     ports:
       - "8100:80"
+    networks:
+      - app-network  # 必须加入网络才能与后端通信
+    restart: unless-stopped  # 添加自动重启策略
 
   todo-app:
     image: gaoyifeng123/234-deploylab:latest
@@ -12,7 +15,16 @@ services:
       - "8101:3000"  
     networks:
       - app-network
+    environment:  # 添加环境变量示例
+      - DB_CONNECTION_STRING=your_db_connection
+    # 如果后端需要持久化存储，添加 volumes:
+    # volumes:
+    #   - data:/app/data
 
 networks:
   app-network:
     driver: bridge
+
+# 如果使用持久化存储，取消注释
+# volumes:
+#   data:
