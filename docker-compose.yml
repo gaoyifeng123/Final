@@ -1,21 +1,15 @@
-version: '3.8'
-
-services:
-  personal-site:
-    build: ./personal-site
+version: '3.3'
+services:  
+  frontend:
+    image: gaoyifeng123/234-deploylab-frontend:latest
+    pull_policy: always
     ports:
       - "8100:80"
-    restart: always
-    volumes:
-      - ./personal-site:/usr/share/nginx/html:ro
-    networks:
-      - app-network
 
   todo-app:
-    image: docker/getting-started
+    image: gaoyifeng123/234-deploylab:latest
     ports:
-      - "8101:8101"
-    restart: always
+      - "8101:3000"  
     networks:
       - app-network
 
