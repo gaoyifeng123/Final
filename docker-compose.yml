@@ -1,30 +1,19 @@
 version: '3.8'
-services:  
-  frontend:
-    image: gaoyifeng123/234-deploylab-frontend:latest
-    pull_policy: always
-    ports:
-      - "8100:80"
-    networks:
-      - app-network  # 必须加入网络才能与后端通信
-    restart: unless-stopped  # 添加自动重启策略
 
+services:
+  # 个人网站服务
+  personal-site:
+    image: gaoyifeng123/personal-site:latest
+    build: .
+    ports:
+      - "80:80"
+    restart: always
+
+  # Todo 应用 (使用现成镜像)
   todo-app:
-    image: gaoyifeng123/234-deploylab:latest
+    image: docker.io/amir20/dozzle:latest  # 示例Todo应用
     ports:
-      - "8101:3000"  
-    networks:
-      - app-network
-    environment:  # 添加环境变量示例
-      - DB_CONNECTION_STRING=your_db_connection
-    # 如果后端需要持久化存储，添加 volumes:
-    # volumes:
-    #   - data:/app/data
-
-networks:
-  app-network:
-    driver: bridge
-
-# 如果使用持久化存储，取消注释
-# volumes:
-#   data:
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: always
