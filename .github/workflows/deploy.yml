@@ -1,51 +1,45 @@
-name: Deploy my service 
+name: Deploy Applications
+
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
+
 jobs:
-  docker:
+  deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4     
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+      - uses: actions/checkout@v2
+
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v1
+
       - name: Login to DockerHub
-        uses: docker/login-action@v3
+        uses: docker/login-action@v1
         with:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_TOKEN }}
-      - name: Verify files
-        run: ls -l
-      - name: Build and push
-        uses: docker/build-push-action@v6
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push Personal Site
+        uses: docker/build-push-action@v2
         with:
-          context: .
+          context: ./personal-site
           push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/234-deploylab-frontend:latest
-      - name: copy file via ssh
-        uses: appleboy/scp-action@v0.1.7
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/personal-site:latest
+
+      - name: Build and push Todo App
+        uses: docker/build-push-action@v2
         with:
-          host: ${{ secrets.HOST_SERVER }}
-          username: ${{ secrets.HOST_USER_NAME }}
-          key: ${{ secrets.HOST_SSH_PRIVATE_KEY }}
-          port: 22
-          source: "docker-compose.yml"
-          target: "/home/ubuntu/frontend"
-      - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1.2.1
+          context: ./todo-app
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/todo-app:latest
+
+      - name: Deploy to server
+        uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.HOST_SERVER }}
-          username: ${{ secrets.HOST_USER_NAME }}
-          key: ${{ secrets.HOST_SSH_PRIVATE_KEY }}
-          port: 22
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-           cd /opt/lab12
-            echo ${{ secrets.DOCKER_HUB_TOKEN }} | docker login --username ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
-            docker compose down || true
-            docker compose pull || true
-            docker compose up -d
-            docker system prune -f
+            cd /path/to/project
+            docker-compose pull
+            docker-compose up -d

@@ -3,17 +3,20 @@ version: '3.8'
 services:
   # 个人网站服务
   personal-site:
-    image: gaoyifeng123/personal-site:latest
-    build: .
+    build: ./personal-site
     ports:
       - "80:80"
-    restart: always
+    networks:
+      - app-network
 
   # Todo 应用 (使用现成镜像)
   todo-app:
-    image: docker.io/amir20/dozzle:latest  # 示例Todo应用
+    build: ./todo-app
     ports:
-      - "8080:8080"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    restart: always
+      - "81:80"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
