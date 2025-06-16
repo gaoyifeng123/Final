@@ -40,7 +40,7 @@ jobs:
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           source: "."
-          target: "/home/你的用户名/final"
+          target: "/home/ubuntu/final"
           rm: true
 
       - name: Deploy to server
