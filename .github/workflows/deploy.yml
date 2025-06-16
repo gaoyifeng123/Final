@@ -40,6 +40,6 @@ jobs:
           username: ${{ secrets.HOST_USER_NAME }}
           key: ${{ secrets.HOST_SSH_PRIVATE_KEY }}
           script: |
-            cd /path/to/project
+            cd /home/ubuntu/final
             docker-compose pull
             docker-compose up -d
